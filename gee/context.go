@@ -48,7 +48,10 @@ func (c *Context) SetHeader(key string, value string) {
 func (c *Context) String(code int, format string, values ...interface{}) {
 	c.SetHeader("Content-Type", "text/plain")
 	c.Status(code)
-	c.Writer.Write([]byte(fmt.Sprintf(format, values...)))
+	_, err := c.Writer.Write([]byte(fmt.Sprintf(format, values...)))
+	if err != nil {
+		return
+	}
 }
 
 func (c *Context) JSON(code int, obj interface{}) {
@@ -62,11 +65,17 @@ func (c *Context) JSON(code int, obj interface{}) {
 
 func (c *Context) Data(code int, data []byte) {
 	c.Status(code)
-	c.Writer.Write(data)
+	_, err := c.Writer.Write(data)
+	if err != nil {
+		http.Error(c.Writer, err.Error(), 500)
+	}
 }
 
 func (c *Context) HTML(code int, html string) {
 	c.SetHeader("Content-Type", "text/html")
 	c.Status(code)
-	c.Writer.Write([]byte(html))
+	_, err := c.Writer.Write([]byte(html))
+	if err != nil {
+		http.Error(c.Writer, err.Error(), 500)
+	}
 }
