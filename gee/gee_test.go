@@ -1,18 +1,16 @@
 package gee
 
-import (
-	"testing"
+import "testing"
 
-	"github.com/stretchr/testify/assert"
-)
-
-func TestNewEngine(t *testing.T) {
-	engine := New()
-
-	// 断言 Engine 对象不为 nil
-	assert.NotNil(t, engine)
-
-	// 断言 router 字段已初始化
-	assert.NotNil(t, engine.router)
-	assert.Empty(t, engine.router)
+func TestNestedGroup(t *testing.T) {
+	r := New()
+	v1 := r.Group("/v1")
+	v2 := v1.Group("/v2")
+	v3 := v2.Group("/v3")
+	if v2.prefix != "/v1/v2" {
+		t.Fatal("v2 prefix should be /v1/v2")
+	}
+	if v3.prefix != "/v1/v2/v3" {
+		t.Fatal("v2 prefix should be /v1/v2")
+	}
 }
